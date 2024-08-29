@@ -14,6 +14,244 @@ import streamlit as st
 st.set_page_config(layout="wide")
 
 st.title("Unmanned Registers Daily Check")
+st.write("First, execute the below query to get 4 extracts (1 for each store) from Aramark")
+st.code("""
+WITH
+	-- The below gets invoice-level information, including year, date, time_partition, workstation, elapsed_time, basket size, and basket amount
+	-- only includes non-cancelled, regular sales invoices from 2023 and 2024, between 10am to 10pm at Court 11 Store
+	invoice_all AS (
+		SELECT
+			inv.invc_sid,
+			inv.created_date,
+			TO_CHAR(inv.created_date, 'YYYY') AS created_year,
+			CASE
+				WHEN TO_CHAR(inv.created_date, 'YYYY') = '2023' THEN (TRUNC(inv.created_date) - TO_DATE('2023-08-28', 'yyyy-mm-dd')) 
+				WHEN TO_CHAR(inv.created_date, 'YYYY') = '2024' THEN (TRUNC(inv.created_date) - TO_DATE('2024-08-26', 'yyyy-mm-dd'))
+				END AS date_index,
+			CASE
+				WHEN TO_NUMBER(TO_CHAR(inv.created_date, 'MI')) > 30 
+				THEN TO_NUMBER(TO_CHAR(inv.created_date, 'HH24')) + 0.5
+				ELSE TO_NUMBER(TO_CHAR(inv.created_date, 'HH24'))
+				END AS time_partition,
+			inv.workstation,
+			LEAST(inv.elapsed_time, 300) AS elapsed_time,																							-- ADJUST ELAPSED_TIME CAP HERE
+			SUM(item.qty) AS basket_size,
+			SUM((COALESCE(item.price, item.orig_price) + COALESCE(item.tax_amt, item.orig_tax_amt)) * item.qty) AS basket_amt
+		FROM cms.invoice_v inv
+		LEFT JOIN cms.store_v str 
+			ON inv.store_no = str.store_no 
+			AND inv.sbs_no = str.sbs_no
+		LEFT JOIN cms.invc_item_v item
+			ON inv.invc_sid = item.invc_sid
+		WHERE 1=1
+			AND str.store_name = 'US OPEN Tennis Championships - 11G'                                           -- SWAP HERE -----------------------------------------------------------------------------
+--			AND str.store_name = 'US OPEN Tennis Championships - S2'                                            -- SWAP HERE -----------------------------------------------------------------------------
+--			AND str.store_name = 'US OPEN Tennis Championships- OCT'                                            -- SWAP HERE -----------------------------------------------------------------------------
+--			AND str.store_name = 'US OPEN Tennis Championships - 22B'                                           -- SWAP HERE -----------------------------------------------------------------------------
+			AND ((inv.created_date >= TO_DATE('2023-08-21', 'yyyy-mm-dd') AND (inv.created_date <= TO_DATE('2023-09-11', 'yyyy-mm-dd')))			-- days -7 through 14 FOR 2023
+				OR (inv.created_date >= TO_DATE('2024-08-18', 'yyyy-mm-dd') AND (inv.created_date <= TO_DATE('2024-09-9', 'yyyy-mm-dd')))			-- days -8 through 14 FOR 2024
+                                )
+			AND TO_CHAR(inv.created_date, 'HH24:MI') BETWEEN '10:00' AND '22:00'																	-- 10am until 10pm
+			AND inv.invc_type = 0																													-- standard sales invoices
+			AND inv.status = 0																														-- non-cancelled invoices
+		GROUP BY 
+			inv.invc_sid,
+			inv.created_date,
+			TO_CHAR(inv.created_date, 'YYYY'), -- created_year
+			inv.workstation,
+			elapsed_time
+		HAVING SUM(item.qty) > 0																													-- remove strange return/exchange invoices that persist
+		ORDER BY inv.created_date
+	),
+	-- the below contains register volumes by year/date/time/workstation
+	-- NOTE: When generalizing this SQL query to include other stores, will  need to revisit some of the logic in creating the baseplate (cross joins)
+	register_volumes_ydtw AS (
+		SELECT -- 2023 baseplate
+			cy.created_year,
+			di.date_index,
+			tp.time_partition,
+			w.workstation,
+			COUNT(inv_a.invc_sid) AS invoice_count_ydtw,
+			CASE WHEN SUM(inv_a.elapsed_time) IS NOT NULL THEN SUM(inv_a.elapsed_time) ELSE 0 END AS elapsed_time_ydtw,
+			CASE WHEN SUM(inv_a.basket_size) IS NOT NULL THEN SUM(inv_a.basket_size) ELSE 0 END AS qty_items_ydtw,
+			CASE WHEN SUM(inv_a.basket_amt) IS NOT NULL THEN SUM(inv_a.basket_amt) ELSE 0 END AS sales_ydtw
+		FROM (SELECT DISTINCT invoice_all.created_year FROM invoice_all WHERE invoice_all.created_year = '2023') cy
+		CROSS JOIN (SELECT DISTINCT invoice_all.date_index FROM invoice_all) di
+		CROSS JOIN (SELECT DISTINCT invoice_all.time_partition FROM invoice_all) tp
+		CROSS JOIN (SELECT DISTINCT invoice_all.workstation FROM invoice_all WHERE invoice_all.created_year = '2023') w
+		LEFT JOIN invoice_all inv_a 
+			ON inv_a.created_year = cy.created_year
+			AND inv_a.date_index = di.date_index
+			AND inv_a.time_partition = tp.time_partition
+			AND inv_a.workstation = w.workstation
+		GROUP BY
+			cy.created_year,
+			di.date_index,
+			tp.time_partition,
+			w.workstation
+		UNION -- 2024 prior days baseplate
+		SELECT
+			cy.created_year,
+			di.date_index,
+			tp.time_partition,
+			w.workstation,
+			COUNT(inv_a.invc_sid) AS invoice_count_ydtw,
+			CASE WHEN SUM(inv_a.elapsed_time) IS NOT NULL THEN SUM(inv_a.elapsed_time) ELSE 0 END AS elapsed_time_ydtw,
+			CASE WHEN SUM(inv_a.basket_size) IS NOT NULL THEN SUM(inv_a.basket_size) ELSE 0 END AS qty_items_ydtw,
+			CASE WHEN SUM(inv_a.basket_amt) IS NOT NULL THEN SUM(inv_a.basket_amt) ELSE 0 END AS sales_ydtw
+		FROM (SELECT DISTINCT invoice_all.created_year FROM invoice_all WHERE invoice_all.created_year = '2024') cy
+		CROSS JOIN (SELECT DISTINCT invoice_all.date_index FROM invoice_all WHERE invoice_all.date_index < (SELECT MAX(invoice_all.date_index) 
+																											FROM invoice_all 
+																											WHERE invoice_all.created_year = '2024')) di
+		CROSS JOIN (SELECT DISTINCT invoice_all.time_partition FROM invoice_all) tp
+		CROSS JOIN (SELECT DISTINCT invoice_all.workstation FROM invoice_all WHERE invoice_all.created_year = '2024') w
+		LEFT JOIN invoice_all inv_a 
+			ON inv_a.created_year = cy.created_year
+			AND inv_a.date_index = di.date_index
+			AND inv_a.time_partition = tp.time_partition
+			AND inv_a.workstation = w.workstation
+		GROUP BY
+			cy.created_year,
+			di.date_index,
+			tp.time_partition,
+			w.workstation
+		UNION -- 2024 current day baseplate (so as to not create blank rows past the current time partition in the current day)
+		SELECT
+			cy.created_year,
+			di.date_index,
+			tp.time_partition,
+			w.workstation,
+			COUNT(inv_a.invc_sid) AS invoice_count_ydtw,
+			CASE WHEN SUM(inv_a.elapsed_time) IS NOT NULL THEN SUM(inv_a.elapsed_time) ELSE 0 END AS elapsed_time_ydtw,
+			CASE WHEN SUM(inv_a.basket_size) IS NOT NULL THEN SUM(inv_a.basket_size) ELSE 0 END AS qty_items_ydtw,
+			CASE WHEN SUM(inv_a.basket_amt) IS NOT NULL THEN SUM(inv_a.basket_amt) ELSE 0 END AS sales_ydtw
+		FROM (SELECT DISTINCT invoice_all.created_year FROM invoice_all WHERE invoice_all.created_year = '2024') cy
+		CROSS JOIN (SELECT MAX(invoice_all.date_index) AS date_index FROM invoice_all WHERE invoice_all.created_year = '2024') di
+		CROSS JOIN (SELECT DISTINCT invoice_all.time_partition FROM invoice_all WHERE invoice_all.date_index = (SELECT MAX(invoice_all.date_index) 
+																												FROM invoice_all 
+																												WHERE invoice_all.created_year = '2024')
+																				AND invoice_all.created_year = '2024') tp
+		CROSS JOIN (SELECT DISTINCT invoice_all.workstation FROM invoice_all WHERE invoice_all.created_year = '2024') w
+		LEFT JOIN invoice_all inv_a 
+			ON inv_a.created_year = cy.created_year
+			AND inv_a.date_index = di.date_index
+			AND inv_a.time_partition = tp.time_partition
+			AND inv_a.workstation = w.workstation
+		GROUP BY
+			cy.created_year,
+			di.date_index,
+			tp.time_partition,
+			w.workstation
+	),
+	-- the below contains register volumes by year/date/time
+	register_volumes_ydt AS (
+		SELECT
+			ydtw.created_year,
+			ydtw.date_index,
+			ydtw.time_partition,
+			SUM(ydtw.invoice_count_ydtw) AS invoice_count_ydt,
+			SUM(ydtw.elapsed_time_ydtw) AS elapsed_time_ydt,
+			SUM(ydtw.qty_items_ydtw) AS qty_items_ydt,
+			SUM(ydtw.sales_ydtw) AS sales_ydt
+		FROM register_volumes_ydtw ydtw
+		GROUP BY 
+			ydtw.created_year, 
+			ydtw.date_index, 
+			ydtw.time_partition
+	),
+	-- the below contains register volumes by year/date
+	register_volumes_yd AS (
+		SELECT 
+			ydt.created_year,
+			ydt.date_index,
+			SUM(ydt.invoice_count_ydt) AS invoice_count_yd,
+			SUM(ydt.elapsed_time_ydt) AS elapsed_time_yd,
+			SUM(ydt.qty_items_ydt) AS qty_items_yd,
+			SUM(ydt.sales_ydt) AS sales_yd,
+			AVG(ydt.invoice_count_ydt) AS avg_invoice_count_per_time,
+			STDDEV(ydt.invoice_count_ydt) AS std_invoice_count_across_times,
+			AVG(ydt.invoice_count_ydt) - 0.5*STDDEV(ydt.invoice_count_ydt) AS activity_level_cutoff_low,
+			AVG(ydt.invoice_count_ydt) + 0.5*STDDEV(ydt.invoice_count_ydt) AS activity_level_cutoff_high
+		FROM register_volumes_ydt ydt
+		GROUP BY 
+			ydt.created_year, 
+			ydt.date_index
+	),
+	-- the below contains Activity Level classifications by year/date/time
+	activity_levels AS (
+		SELECT 
+			ydt.created_year,
+			ydt.date_index,
+			ydt.time_partition,
+--			ydt.invoice_count_ydt,
+--			yd.activity_level_cutoff_low,
+--			yd.activity_level_cutoff_high,
+			CASE
+				WHEN ydt.invoice_count_ydt >= 25 AND ydt.invoice_count_ydt >= yd.activity_level_cutoff_high
+					THEN 'High'
+				WHEN ydt.invoice_count_ydt < yd.activity_level_cutoff_low
+					THEN 'Low'
+				ELSE 'Mid'
+				END AS activity_level
+		FROM register_volumes_ydt ydt
+		LEFT JOIN register_volumes_yd yd
+			ON ydt.created_year = yd.created_year
+			AND ydt.date_index = yd.date_index
+	),
+	-- the below contains Manned/Unmanned status by year/date/time/workstation
+	master AS (
+		SELECT 
+			ydtw.created_year,
+			ydtw.date_index,
+			ydtw.time_partition,
+			ydtw.workstation,
+			CASE
+				WHEN ydtw.workstation = 11 AND ydtw.created_year = '2024' 								-- ADJUST FRICTIONLESS REGISTER WORKSTATION ID HERE
+					THEN 'Frictionless'
+				ELSE 'Standard'
+				END AS workstation_type,
+			ydtw.invoice_count_ydtw,
+			ydtw.elapsed_time_ydtw,
+			ydtw.qty_items_ydtw,
+			ydtw.sales_ydtw,
+			al.activity_level,
+			CASE 
+				WHEN al.activity_level = 'High' AND ydtw.invoice_count_ydtw = 0 AND (CASE
+																						WHEN ydtw.workstation = 11 AND ydtw.created_year = '2024'
+																							THEN 'Frictionless'
+																						ELSE 'Standard' END) = 'Standard' 
+					THEN 'Unmanned'
+				ELSE 'Manned' END AS status
+		FROM register_volumes_ydtw ydtw
+		LEFT JOIN activity_levels al
+			ON ydtw.created_year = al.created_year
+			AND ydtw.date_index = al.date_index
+			AND ydtw.time_partition = al.time_partition
+	)
+-- invoice_all, register_volumes_ydtw, register_volumes_ydt, register_volumes_yd, activity_levels (ydt), master (ydtw)
+SELECT 
+	m.created_year,
+	m.date_index,
+	m.time_partition,
+	m.workstation,
+	m.workstation_type,
+	m.invoice_count_ydtw AS invoice_count,
+	m.elapsed_time_ydtw AS transactions_time,
+	m.qty_items_ydtw AS qty_items_sold,
+	m.sales_ydtw AS total_sales,
+	m.activity_level,
+	m.status,
+	yd.invoice_count_yd AS daily_store_invoice_count
+FROM master m
+LEFT JOIN register_volumes_yd yd
+	ON m.created_year = yd.created_year
+	AND m.date_index = yd.date_index
+ORDER BY 
+	created_year DESC, 
+	date_index DESC, 
+	time_partition DESC, 
+	workstation ASC
+""", language='plsql')
 
 st.divider()
 
