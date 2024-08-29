@@ -486,7 +486,7 @@ if all([len(data_22B)!=0, len(data_Oct)!=0, len(data_S2)!=0, len(data_11G)!=0]):
 
         col4, col5 = st.columns([1,1])
         with col4:
-            years_selected = st.multiselect("**Year:**", [2024, 2025], default=2024)
+            years_selected = st.multiselect("**Year:**", [2023, 2024], default=2024)
         with col5:
             days_selected = st.multiselect("**Date Index:**", range(0,13), default=range(0,13)) # day 0 is the start of the main draw
         
