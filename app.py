@@ -10,7 +10,6 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 
 import streamlit as st
-import time
 
 st.set_page_config(layout="wide")
 
