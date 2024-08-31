@@ -12,7 +12,7 @@ import streamlit as st
 st.set_page_config(layout="wide")
 
 st.title("Unmanned Registers Daily Check")
-st.write("First, execute the below query to get 4 extracts (1 for each store) from Aramark")
+st.write("First, execute the below query in your own IDE to get an extract of the register volumes from Aramark")
 
 with st.expander("See SQL Query"):
 	st.code("""
