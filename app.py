@@ -12,7 +12,8 @@ import streamlit as st
 st.set_page_config(layout="wide")
 
 st.title("Unmanned Registers Daily Check")
-st.write("First, execute the below query in your own IDE to get an extract of the register volumes from Aramark")
+st.header("1. Execute query)
+st.text("Execute the below query in your own IDE to get an extract of the register volumes from Aramark")
 
 with st.expander("See SQL Query"):
 	st.code("""
@@ -854,7 +855,7 @@ if len(data_all) != 0:
 
         ######################################################## NEXT SECTION ########################################################
 
-	elif visual_selected == "Unmanned Registers":
+elif visual_selected == "Unmanned Registers Presence":
 		viz_header.header("Unmanned Register Presence") 
 
 		col4, col5 = st.columns([1,1])
@@ -863,7 +864,7 @@ if len(data_all) != 0:
 		with col5:
 			days_selected = st.multiselect("**Date Index:**", range(0,13), default=range(0,13)) # day 0 is the start of the main draw
         
-		stores = ['S2', '22B', '11G', 'OCT']
+		stores = ['S2', '22B', '11G', 'Oct']
 
         ######################################################## TEMP DATASET CREATION FOR FIG ########################################################
 		try:
@@ -909,8 +910,46 @@ if len(data_all) != 0:
 				print("")
 		except:
 			st.error("There is no data on the filters selected")
-        
-        #Each cell is total number of years which had an u
-        # manned register during that day/time combination across 2019, 2021, 2022, 2023. Each year can
-        #contribute a maximum of 1 to this count (1 if it had any # of unmanned registers, 0 if it did not. A cell count of 4 means all 4 years had an unmanned
-        #register during that day/time combination)
+
+	elif visual_selected == "Unmanned Registers Count":
+	
+		stores = ['S2', '22B', '11G', 'OCT']
+
+		col6, col7 = st.columns([1,1])
+		with col6:
+			years_selected = st.multiselect("**Year:**", [2023, 2024], default=2024)
+		with col7:
+			days_selected = st.multiselect("**Date Index:**", range(0,13), default=range(0,13)) # day 0 is the start of the main draw
+
+		######################################################## TEMP DATASET CREATION FOR FIG ########################################################
+
+
+		for store_code in stores:
+
+			print(f"Store: {store_code}")
+				
+			temp = data_all[ (data_all['STORE_CODE']==store_code) & (data_all['DATE_INDEX'].isin(days_selected)) & (data_all['CREATED_YEAR'].isin(years_selected))].copy()
+			temp.sort_values(['DATE_INDEX', 'WORKSTATION'], inplace=True)
+			unmanned_counts = temp.groupby(['STORE_CODE', 'DATE_INDEX', 'TIME_PARTITION'])['Unmanned_High'].sum().to_frame("Count of Unmanned Registers during High-Activity Across Years")
+			unmanned_counts.reset_index(inplace=True)
+			
+			# ------
+			
+			heat_df = pd.pivot_table(unmanned_counts, values='Count of Unmanned Registers during High-Activity Across Years', index='TIME_PARTITION', columns='DATE_INDEX')
+			
+			# Create the heatmap
+			plt.figure(figsize=(13, 9))  # Adjust the figure size as needed
+			sns.heatmap(heat_df, cmap='plasma', annot=True, cbar=False)  # You can choose a different colormap like 'RdGy' or 'plasma'
+			
+			# Label the axis
+			plt.xlabel('DATE_INDEX')
+			plt.ylabel('TIME_PARTITION')
+			plt.title(f'Total Unmanned Registers Count for {store_code}')
+			
+			# Show the plot
+			st.pyplot(plt,use_container_width=False)
+
+			print("----------------------------------------------------")
+			print("----------------------------------------------------")
+			print("----------------------------------------------------")
+			print("")
