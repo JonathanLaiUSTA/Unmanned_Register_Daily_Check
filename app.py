@@ -854,8 +854,8 @@ if len(data_all) != 0:
 
 
         ######################################################## NEXT SECTION ########################################################
-
-elif visual_selected == "Unmanned Registers Presence":
+	
+	elif visual_selected == "Unmanned Registers Presence":
 		viz_header.header("Unmanned Register Presence") 
 
 		col4, col5 = st.columns([1,1])
