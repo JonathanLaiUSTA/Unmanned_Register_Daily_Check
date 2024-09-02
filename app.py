@@ -701,7 +701,7 @@ if len(data_all) != 0:
 		with col2:
 			day_selected = st.selectbox("**Date Index:**", range(0,13), index=0) # day 0 is the start of the main draw
 		with col3:
-			store_selected = st.selectbox("**Store:**", ['S2', '22B', '11G', 'Oct'], index=2)
+			store_selected = st.selectbox("**Store:**", ['S2', '22B', '11G', 'OCT'], index=2)
 
 		# Change parameters here at the top
 
@@ -878,7 +878,7 @@ if len(data_all) != 0:
 		with col5:
 			days_selected = st.multiselect("**Date Index:**", range(0,13), default=range(0,13)) # day 0 is the start of the main draw
         
-		stores = ['S2', '22B', '11G', 'Oct']
+		stores = ['S2', '22B', '11G', 'OCT']
 
         ######################################################## TEMP DATASET CREATION FOR FIG ########################################################
 		try:
