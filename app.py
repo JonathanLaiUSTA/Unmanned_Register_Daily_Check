@@ -16,6 +16,33 @@ st.set_page_config(layout="wide")
 st.title("Unmanned Registers Daily Check")
 st.write("First, execute the below query to get 4 extracts (1 for each store) from Aramark")
 
+################################
+
+st.title("Oracle Database Connection")
+
+form = st.form("connection_form")
+hostname = form.text_input("Hostname", "uso-aramark-01.usta-digital.com")
+port = form.number_input("Port", value=1521)
+service_name = form.text_input("Database", "rproods")
+username = form.text_input("Username", "reportuser")
+password = form.text_input("Password", type="password")
+
+submit_button = form.form_submit_button("Connect")
+
+if submit_button:
+	try:
+		conn = oracledb.connect(
+			user=username,
+			password=password,
+			dsn=oracledb.makedsn(hostname, port, service_name)
+		)
+
+		st.success("Connected successfully!")
+	except oracledb.Error as error:
+		st.error(f"Error connecting: {error}")
+
+###################################
+
 with st.expander("See SQL Query"):
 	st.code("""
 	WITH
