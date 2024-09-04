@@ -202,6 +202,56 @@ with st.expander("See SQL Query"):
 		-- the below contains register volumes by year/date/time/workstation
 		-- NOTE: When generalizing this SQL query to include other stores, will  need to revisit some of the logic in creating the baseplate (cross joins)
 		register_volumes_ydtw_11G AS (
+			SELECT -- 2021 baseplate
+				cy.created_year,
+				di.date_index,
+				tp.time_partition,
+				'11G' AS store_code,
+				w.workstation,
+				COUNT(inv_a.invc_sid) AS invoice_count_ydtw,
+				CASE WHEN SUM(inv_a.elapsed_time) IS NOT NULL THEN SUM(inv_a.elapsed_time) ELSE 0 END AS elapsed_time_ydtw,
+				CASE WHEN SUM(inv_a.basket_size) IS NOT NULL THEN SUM(inv_a.basket_size) ELSE 0 END AS qty_items_ydtw,
+				CASE WHEN SUM(inv_a.basket_amt) IS NOT NULL THEN SUM(inv_a.basket_amt) ELSE 0 END AS sales_ydtw
+			FROM (SELECT DISTINCT invoice_11G.created_year FROM invoice_11G WHERE invoice_11G.created_year = '2021') cy
+			CROSS JOIN (SELECT DISTINCT invoice_11G.date_index FROM invoice_11G) di
+			CROSS JOIN (SELECT DISTINCT invoice_11G.time_partition FROM invoice_11G) tp
+			CROSS JOIN (SELECT DISTINCT invoice_11G.workstation FROM invoice_11G WHERE invoice_11G.created_year = '2021') w
+			LEFT JOIN invoice_11G inv_a 
+				ON inv_a.created_year = cy.created_year
+				AND inv_a.date_index = di.date_index
+				AND inv_a.time_partition = tp.time_partition
+				AND inv_a.workstation = w.workstation
+			GROUP BY
+				cy.created_year,
+				di.date_index,
+				tp.time_partition,
+				w.workstation
+			UNION
+			SELECT -- 2022 baseplate
+				cy.created_year,
+				di.date_index,
+				tp.time_partition,
+				'11G' AS store_code,
+				w.workstation,
+				COUNT(inv_a.invc_sid) AS invoice_count_ydtw,
+				CASE WHEN SUM(inv_a.elapsed_time) IS NOT NULL THEN SUM(inv_a.elapsed_time) ELSE 0 END AS elapsed_time_ydtw,
+				CASE WHEN SUM(inv_a.basket_size) IS NOT NULL THEN SUM(inv_a.basket_size) ELSE 0 END AS qty_items_ydtw,
+				CASE WHEN SUM(inv_a.basket_amt) IS NOT NULL THEN SUM(inv_a.basket_amt) ELSE 0 END AS sales_ydtw
+			FROM (SELECT DISTINCT invoice_11G.created_year FROM invoice_11G WHERE invoice_11G.created_year = '2022') cy
+			CROSS JOIN (SELECT DISTINCT invoice_11G.date_index FROM invoice_11G) di
+			CROSS JOIN (SELECT DISTINCT invoice_11G.time_partition FROM invoice_11G) tp
+			CROSS JOIN (SELECT DISTINCT invoice_11G.workstation FROM invoice_11G WHERE invoice_11G.created_year = '2022') w
+			LEFT JOIN invoice_11G inv_a 
+				ON inv_a.created_year = cy.created_year
+				AND inv_a.date_index = di.date_index
+				AND inv_a.time_partition = tp.time_partition
+				AND inv_a.workstation = w.workstation
+			GROUP BY
+				cy.created_year,
+				di.date_index,
+				tp.time_partition,
+				w.workstation
+			UNION
 			SELECT -- 2023 baseplate
 				cy.created_year,
 				di.date_index,
@@ -285,6 +335,56 @@ with st.expander("See SQL Query"):
 		-- the below contains register volumes by year/date/time/workstation
 		-- NOTE: When generalizing this SQL query to include other stores, will  need to revisit some of the logic in creating the baseplate (cross joins)
 		register_volumes_ydtw_S2 AS (
+			SELECT -- 2021 baseplate
+				cy.created_year,
+				di.date_index,
+				tp.time_partition,
+				'S2' AS store_code,
+				w.workstation,
+				COUNT(inv_a.invc_sid) AS invoice_count_ydtw,
+				CASE WHEN SUM(inv_a.elapsed_time) IS NOT NULL THEN SUM(inv_a.elapsed_time) ELSE 0 END AS elapsed_time_ydtw,
+				CASE WHEN SUM(inv_a.basket_size) IS NOT NULL THEN SUM(inv_a.basket_size) ELSE 0 END AS qty_items_ydtw,
+				CASE WHEN SUM(inv_a.basket_amt) IS NOT NULL THEN SUM(inv_a.basket_amt) ELSE 0 END AS sales_ydtw
+			FROM (SELECT DISTINCT invoice_S2.created_year FROM invoice_S2 WHERE invoice_S2.created_year = '2021') cy
+			CROSS JOIN (SELECT DISTINCT invoice_S2.date_index FROM invoice_S2) di
+			CROSS JOIN (SELECT DISTINCT invoice_S2.time_partition FROM invoice_S2) tp
+			CROSS JOIN (SELECT DISTINCT invoice_S2.workstation FROM invoice_S2 WHERE invoice_S2.created_year = '2021') w
+			LEFT JOIN invoice_S2 inv_a 
+				ON inv_a.created_year = cy.created_year
+				AND inv_a.date_index = di.date_index
+				AND inv_a.time_partition = tp.time_partition
+				AND inv_a.workstation = w.workstation
+			GROUP BY
+				cy.created_year,
+				di.date_index,
+				tp.time_partition,
+				w.workstation
+			UNION
+			SELECT -- 2022 baseplate
+				cy.created_year,
+				di.date_index,
+				tp.time_partition,
+				'S2' AS store_code,
+				w.workstation,
+				COUNT(inv_a.invc_sid) AS invoice_count_ydtw,
+				CASE WHEN SUM(inv_a.elapsed_time) IS NOT NULL THEN SUM(inv_a.elapsed_time) ELSE 0 END AS elapsed_time_ydtw,
+				CASE WHEN SUM(inv_a.basket_size) IS NOT NULL THEN SUM(inv_a.basket_size) ELSE 0 END AS qty_items_ydtw,
+				CASE WHEN SUM(inv_a.basket_amt) IS NOT NULL THEN SUM(inv_a.basket_amt) ELSE 0 END AS sales_ydtw
+			FROM (SELECT DISTINCT invoice_S2.created_year FROM invoice_S2 WHERE invoice_S2.created_year = '2022') cy
+			CROSS JOIN (SELECT DISTINCT invoice_S2.date_index FROM invoice_S2) di
+			CROSS JOIN (SELECT DISTINCT invoice_S2.time_partition FROM invoice_S2) tp
+			CROSS JOIN (SELECT DISTINCT invoice_S2.workstation FROM invoice_S2 WHERE invoice_S2.created_year = '2022') w
+			LEFT JOIN invoice_S2 inv_a 
+				ON inv_a.created_year = cy.created_year
+				AND inv_a.date_index = di.date_index
+				AND inv_a.time_partition = tp.time_partition
+				AND inv_a.workstation = w.workstation
+			GROUP BY
+				cy.created_year,
+				di.date_index,
+				tp.time_partition,
+				w.workstation
+			UNION
 			SELECT -- 2023 baseplate
 				cy.created_year,
 				di.date_index,
@@ -368,6 +468,56 @@ with st.expander("See SQL Query"):
 		-- the below contains register volumes by year/date/time/workstation
 		-- NOTE: When generalizing this SQL query to include other stores, will  need to revisit some of the logic in creating the baseplate (cross joins)
 		register_volumes_ydtw_OCT AS (
+			SELECT -- 2021 baseplate
+				cy.created_year,
+				di.date_index,
+				tp.time_partition,
+				'OCT' AS store_code,
+				w.workstation,
+				COUNT(inv_a.invc_sid) AS invoice_count_ydtw,
+				CASE WHEN SUM(inv_a.elapsed_time) IS NOT NULL THEN SUM(inv_a.elapsed_time) ELSE 0 END AS elapsed_time_ydtw,
+				CASE WHEN SUM(inv_a.basket_size) IS NOT NULL THEN SUM(inv_a.basket_size) ELSE 0 END AS qty_items_ydtw,
+				CASE WHEN SUM(inv_a.basket_amt) IS NOT NULL THEN SUM(inv_a.basket_amt) ELSE 0 END AS sales_ydtw
+			FROM (SELECT DISTINCT invoice_OCT.created_year FROM invoice_OCT WHERE invoice_OCT.created_year = '2021') cy
+			CROSS JOIN (SELECT DISTINCT invoice_OCT.date_index FROM invoice_OCT) di
+			CROSS JOIN (SELECT DISTINCT invoice_OCT.time_partition FROM invoice_OCT) tp
+			CROSS JOIN (SELECT DISTINCT invoice_OCT.workstation FROM invoice_OCT WHERE invoice_OCT.created_year = '2021') w
+			LEFT JOIN invoice_OCT inv_a 
+				ON inv_a.created_year = cy.created_year
+				AND inv_a.date_index = di.date_index
+				AND inv_a.time_partition = tp.time_partition
+				AND inv_a.workstation = w.workstation
+			GROUP BY
+				cy.created_year,
+				di.date_index,
+				tp.time_partition,
+				w.workstation
+			UNION
+			SELECT -- 2022 baseplate
+				cy.created_year,
+				di.date_index,
+				tp.time_partition,
+				'OCT' AS store_code,
+				w.workstation,
+				COUNT(inv_a.invc_sid) AS invoice_count_ydtw,
+				CASE WHEN SUM(inv_a.elapsed_time) IS NOT NULL THEN SUM(inv_a.elapsed_time) ELSE 0 END AS elapsed_time_ydtw,
+				CASE WHEN SUM(inv_a.basket_size) IS NOT NULL THEN SUM(inv_a.basket_size) ELSE 0 END AS qty_items_ydtw,
+				CASE WHEN SUM(inv_a.basket_amt) IS NOT NULL THEN SUM(inv_a.basket_amt) ELSE 0 END AS sales_ydtw
+			FROM (SELECT DISTINCT invoice_OCT.created_year FROM invoice_OCT WHERE invoice_OCT.created_year = '2022') cy
+			CROSS JOIN (SELECT DISTINCT invoice_OCT.date_index FROM invoice_OCT) di
+			CROSS JOIN (SELECT DISTINCT invoice_OCT.time_partition FROM invoice_OCT) tp
+			CROSS JOIN (SELECT DISTINCT invoice_OCT.workstation FROM invoice_OCT WHERE invoice_OCT.created_year = '2022') w
+			LEFT JOIN invoice_OCT inv_a 
+				ON inv_a.created_year = cy.created_year
+				AND inv_a.date_index = di.date_index
+				AND inv_a.time_partition = tp.time_partition
+				AND inv_a.workstation = w.workstation
+			GROUP BY
+				cy.created_year,
+				di.date_index,
+				tp.time_partition,
+				w.workstation
+			UNION
 			SELECT -- 2023 baseplate
 				cy.created_year,
 				di.date_index,
@@ -451,6 +601,56 @@ with st.expander("See SQL Query"):
 		-- the below contains register volumes by year/date/time/workstation
 		-- NOTE: When generalizing this SQL query to include other stores, will  need to revisit some of the logic in creating the baseplate (cross joins)
 		register_volumes_ydtw_22B AS (
+			SELECT -- 2021 baseplate
+				cy.created_year,
+				di.date_index,
+				tp.time_partition,
+				'22B' AS store_code,
+				w.workstation,
+				COUNT(inv_a.invc_sid) AS invoice_count_ydtw,
+				CASE WHEN SUM(inv_a.elapsed_time) IS NOT NULL THEN SUM(inv_a.elapsed_time) ELSE 0 END AS elapsed_time_ydtw,
+				CASE WHEN SUM(inv_a.basket_size) IS NOT NULL THEN SUM(inv_a.basket_size) ELSE 0 END AS qty_items_ydtw,
+				CASE WHEN SUM(inv_a.basket_amt) IS NOT NULL THEN SUM(inv_a.basket_amt) ELSE 0 END AS sales_ydtw
+			FROM (SELECT DISTINCT invoice_22B.created_year FROM invoice_22B WHERE invoice_22B.created_year = '2021') cy
+			CROSS JOIN (SELECT DISTINCT invoice_22B.date_index FROM invoice_22B) di
+			CROSS JOIN (SELECT DISTINCT invoice_22B.time_partition FROM invoice_22B) tp
+			CROSS JOIN (SELECT DISTINCT invoice_22B.workstation FROM invoice_22B WHERE invoice_22B.created_year = '2021') w
+			LEFT JOIN invoice_22B inv_a 
+				ON inv_a.created_year = cy.created_year
+				AND inv_a.date_index = di.date_index
+				AND inv_a.time_partition = tp.time_partition
+				AND inv_a.workstation = w.workstation
+			GROUP BY
+				cy.created_year,
+				di.date_index,
+				tp.time_partition,
+				w.workstation
+			UNION
+			SELECT -- 2022 baseplate
+				cy.created_year,
+				di.date_index,
+				tp.time_partition,
+				'22B' AS store_code,
+				w.workstation,
+				COUNT(inv_a.invc_sid) AS invoice_count_ydtw,
+				CASE WHEN SUM(inv_a.elapsed_time) IS NOT NULL THEN SUM(inv_a.elapsed_time) ELSE 0 END AS elapsed_time_ydtw,
+				CASE WHEN SUM(inv_a.basket_size) IS NOT NULL THEN SUM(inv_a.basket_size) ELSE 0 END AS qty_items_ydtw,
+				CASE WHEN SUM(inv_a.basket_amt) IS NOT NULL THEN SUM(inv_a.basket_amt) ELSE 0 END AS sales_ydtw
+			FROM (SELECT DISTINCT invoice_22B.created_year FROM invoice_22B WHERE invoice_22B.created_year = '2022') cy
+			CROSS JOIN (SELECT DISTINCT invoice_22B.date_index FROM invoice_22B) di
+			CROSS JOIN (SELECT DISTINCT invoice_22B.time_partition FROM invoice_22B) tp
+			CROSS JOIN (SELECT DISTINCT invoice_22B.workstation FROM invoice_22B WHERE invoice_22B.created_year = '2022') w
+			LEFT JOIN invoice_22B inv_a 
+				ON inv_a.created_year = cy.created_year
+				AND inv_a.date_index = di.date_index
+				AND inv_a.time_partition = tp.time_partition
+				AND inv_a.workstation = w.workstation
+			GROUP BY
+				cy.created_year,
+				di.date_index,
+				tp.time_partition,
+				w.workstation
+			UNION
 			SELECT -- 2023 baseplate
 				cy.created_year,
 				di.date_index,
@@ -636,33 +836,6 @@ with st.expander("See SQL Query"):
 				AND ydtw.date_index = al.date_index
 				AND ydtw.time_partition = al.time_partition
 				AND ydtw.store_code = al.store_code
-		)
-	-- invoice_all, register_volumes_ydtw, register_volumes_ydt, register_volumes_yd, activity_levels (ydt), master (ydtw)
-	SELECT 
-		m.created_year,
-		m.date_index,
-		m.time_partition,
-		m.store_code,
-		m.workstation,
-		m.workstation_type,
-		m.invoice_count_ydtw AS invoice_count,
-		m.elapsed_time_ydtw AS transactions_time,
-		m.qty_items_ydtw AS qty_items_sold,
-		m.sales_ydtw AS total_sales,
-		m.activity_level,
-		m.status,
-		yd.invoice_count_yd AS daily_store_invoice_count
-	FROM master m
-	LEFT JOIN register_volumes_yd yd
-		ON m.created_year = yd.created_year
-		AND m.date_index = yd.date_index
-		AND m.store_code = yd.store_code
-	ORDER BY 
-		created_year DESC, 
-		date_index DESC, 
-		time_partition DESC, 
-		store_code DESC,
-		workstation ASC
 		)
 	-- invoice_all, register_volumes_ydtw, register_volumes_ydt, register_volumes_yd, activity_levels (ydt), master (ydtw)
 	SELECT 
