@@ -47,11 +47,11 @@ with st.expander("See SQL Query"):
 				ON inv.invc_sid = item.invc_sid
 			WHERE 1=1
 				AND str.store_name = 'US OPEN Tennis Championships - 11G'
-				AND ((inv.created_date >= TO_DATE('2023-08-23', 'yyyy-mm-dd') AND (inv.created_date <= TO_DATE('2021-09-13', 'yyyy-mm-dd')))			-- days -7 through 14 FOR 2021
-					OR (inv.created_date >= TO_DATE('2023-08-22', 'yyyy-mm-dd') AND (inv.created_date <= TO_DATE('2022-09-12', 'yyyy-mm-dd')))			-- days -7 through 14 FOR 2022
+				AND ((inv.created_date >= TO_DATE('2021-08-23', 'yyyy-mm-dd') AND (inv.created_date <= TO_DATE('2021-09-13', 'yyyy-mm-dd')))			-- days -7 through 14 FOR 2021
+					OR (inv.created_date >= TO_DATE('2022-08-22', 'yyyy-mm-dd') AND (inv.created_date <= TO_DATE('2022-09-12', 'yyyy-mm-dd')))			-- days -7 through 14 FOR 2022
 					OR (inv.created_date >= TO_DATE('2023-08-21', 'yyyy-mm-dd') AND (inv.created_date <= TO_DATE('2023-09-11', 'yyyy-mm-dd')))			-- days -7 through 14 FOR 2023
 					OR (inv.created_date >= TO_DATE('2024-08-18', 'yyyy-mm-dd') AND (inv.created_date <= TO_DATE('2024-09-9', 'yyyy-mm-dd')))			-- days -8 through 14 FOR 2024
-									)
+	                                )
 				AND TO_CHAR(inv.created_date, 'HH24:MI') BETWEEN '10:00' AND '22:00'																	-- 10am until 10pm
 				AND inv.invc_type = 0																													-- standard sales invoices
 				AND inv.status = 0																														-- non-cancelled invoices
@@ -92,11 +92,11 @@ with st.expander("See SQL Query"):
 				ON inv.invc_sid = item.invc_sid
 			WHERE 1=1
 				AND str.store_name = 'US OPEN Tennis Championships - S2'
-				AND ((inv.created_date >= TO_DATE('2023-08-23', 'yyyy-mm-dd') AND (inv.created_date <= TO_DATE('2021-09-13', 'yyyy-mm-dd')))			-- days -7 through 14 FOR 2021
-					OR (inv.created_date >= TO_DATE('2023-08-22', 'yyyy-mm-dd') AND (inv.created_date <= TO_DATE('2022-09-12', 'yyyy-mm-dd')))			-- days -7 through 14 FOR 2022
+				AND ((inv.created_date >= TO_DATE('2021-08-23', 'yyyy-mm-dd') AND (inv.created_date <= TO_DATE('2021-09-13', 'yyyy-mm-dd')))			-- days -7 through 14 FOR 2021
+					OR (inv.created_date >= TO_DATE('2022-08-22', 'yyyy-mm-dd') AND (inv.created_date <= TO_DATE('2022-09-12', 'yyyy-mm-dd')))			-- days -7 through 14 FOR 2022
 					OR (inv.created_date >= TO_DATE('2023-08-21', 'yyyy-mm-dd') AND (inv.created_date <= TO_DATE('2023-09-11', 'yyyy-mm-dd')))			-- days -7 through 14 FOR 2023
 					OR (inv.created_date >= TO_DATE('2024-08-18', 'yyyy-mm-dd') AND (inv.created_date <= TO_DATE('2024-09-9', 'yyyy-mm-dd')))			-- days -8 through 14 FOR 2024
-									)
+	                                )
 				AND TO_CHAR(inv.created_date, 'HH24:MI') BETWEEN '10:00' AND '22:00'																	-- 10am until 10pm
 				AND inv.invc_type = 0																													-- standard sales invoices
 				AND inv.status = 0																														-- non-cancelled invoices
@@ -137,11 +137,11 @@ with st.expander("See SQL Query"):
 				ON inv.invc_sid = item.invc_sid
 			WHERE 1=1
 				AND str.store_name = 'US OPEN Tennis Championships- OCT'
-				AND ((inv.created_date >= TO_DATE('2023-08-23', 'yyyy-mm-dd') AND (inv.created_date <= TO_DATE('2021-09-13', 'yyyy-mm-dd')))			-- days -7 through 14 FOR 2021
-					OR (inv.created_date >= TO_DATE('2023-08-22', 'yyyy-mm-dd') AND (inv.created_date <= TO_DATE('2022-09-12', 'yyyy-mm-dd')))			-- days -7 through 14 FOR 2022
+				AND ((inv.created_date >= TO_DATE('2021-08-23', 'yyyy-mm-dd') AND (inv.created_date <= TO_DATE('2021-09-13', 'yyyy-mm-dd')))			-- days -7 through 14 FOR 2021
+					OR (inv.created_date >= TO_DATE('2022-08-22', 'yyyy-mm-dd') AND (inv.created_date <= TO_DATE('2022-09-12', 'yyyy-mm-dd')))			-- days -7 through 14 FOR 2022
 					OR (inv.created_date >= TO_DATE('2023-08-21', 'yyyy-mm-dd') AND (inv.created_date <= TO_DATE('2023-09-11', 'yyyy-mm-dd')))			-- days -7 through 14 FOR 2023
 					OR (inv.created_date >= TO_DATE('2024-08-18', 'yyyy-mm-dd') AND (inv.created_date <= TO_DATE('2024-09-9', 'yyyy-mm-dd')))			-- days -8 through 14 FOR 2024
-									)
+	                                )
 				AND TO_CHAR(inv.created_date, 'HH24:MI') BETWEEN '10:00' AND '22:00'																	-- 10am until 10pm
 				AND inv.invc_type = 0																													-- standard sales invoices
 				AND inv.status = 0																														-- non-cancelled invoices
@@ -182,11 +182,11 @@ with st.expander("See SQL Query"):
 				ON inv.invc_sid = item.invc_sid
 			WHERE 1=1
 				AND str.store_name = 'US OPEN Tennis Championships - 22B'
-				AND ((inv.created_date >= TO_DATE('2023-08-23', 'yyyy-mm-dd') AND (inv.created_date <= TO_DATE('2021-09-13', 'yyyy-mm-dd')))			-- days -7 through 14 FOR 2021
-					OR (inv.created_date >= TO_DATE('2023-08-22', 'yyyy-mm-dd') AND (inv.created_date <= TO_DATE('2022-09-12', 'yyyy-mm-dd')))			-- days -7 through 14 FOR 2022
+				AND ((inv.created_date >= TO_DATE('2021-08-23', 'yyyy-mm-dd') AND (inv.created_date <= TO_DATE('2021-09-13', 'yyyy-mm-dd')))			-- days -7 through 14 FOR 2021
+					OR (inv.created_date >= TO_DATE('2022-08-22', 'yyyy-mm-dd') AND (inv.created_date <= TO_DATE('2022-09-12', 'yyyy-mm-dd')))			-- days -7 through 14 FOR 2022
 					OR (inv.created_date >= TO_DATE('2023-08-21', 'yyyy-mm-dd') AND (inv.created_date <= TO_DATE('2023-09-11', 'yyyy-mm-dd')))			-- days -7 through 14 FOR 2023
 					OR (inv.created_date >= TO_DATE('2024-08-18', 'yyyy-mm-dd') AND (inv.created_date <= TO_DATE('2024-09-9', 'yyyy-mm-dd')))			-- days -8 through 14 FOR 2024
-									)
+	                                )
 				AND TO_CHAR(inv.created_date, 'HH24:MI') BETWEEN '10:00' AND '22:00'																	-- 10am until 10pm
 				AND inv.invc_type = 0																													-- standard sales invoices
 				AND inv.status = 0																														-- non-cancelled invoices
@@ -636,6 +636,33 @@ with st.expander("See SQL Query"):
 				AND ydtw.date_index = al.date_index
 				AND ydtw.time_partition = al.time_partition
 				AND ydtw.store_code = al.store_code
+		)
+	-- invoice_all, register_volumes_ydtw, register_volumes_ydt, register_volumes_yd, activity_levels (ydt), master (ydtw)
+	SELECT 
+		m.created_year,
+		m.date_index,
+		m.time_partition,
+		m.store_code,
+		m.workstation,
+		m.workstation_type,
+		m.invoice_count_ydtw AS invoice_count,
+		m.elapsed_time_ydtw AS transactions_time,
+		m.qty_items_ydtw AS qty_items_sold,
+		m.sales_ydtw AS total_sales,
+		m.activity_level,
+		m.status,
+		yd.invoice_count_yd AS daily_store_invoice_count
+	FROM master m
+	LEFT JOIN register_volumes_yd yd
+		ON m.created_year = yd.created_year
+		AND m.date_index = yd.date_index
+		AND m.store_code = yd.store_code
+	ORDER BY 
+		created_year DESC, 
+		date_index DESC, 
+		time_partition DESC, 
+		store_code DESC,
+		workstation ASC
 		)
 	-- invoice_all, register_volumes_ydtw, register_volumes_ydt, register_volumes_yd, activity_levels (ydt), master (ydtw)
 	SELECT 
