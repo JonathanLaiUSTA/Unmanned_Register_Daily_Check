@@ -899,7 +899,7 @@ if len(data_all) != 0:
 		with col1:
 			year_selected = st.selectbox("**Year:**", [2021, 2022, 2023, 2024], index=1)
 		with col2:
-			day_selected = st.selectbox("**Date Index:**", range(0,13), index=0) # day 0 is the start of the main draw
+			day_selected = st.selectbox("**Date Index:**", range(0,14), index=0) # day 0 is the start of the main draw
 		with col3:
 			store_selected = st.selectbox("**Store:**", ['S2', '22B', '11G', 'OCT'], index=2)
 
@@ -1076,7 +1076,7 @@ if len(data_all) != 0:
 		with col4:
 			years_selected = st.multiselect("**Year:**", [2021, 2022, 2023, 2024], default=2024)
 		with col5:
-			days_selected = st.multiselect("**Date Index:**", range(0,13), default=range(0,13)) # day 0 is the start of the main draw
+			days_selected = st.multiselect("**Date Index:**", range(0,14), default=range(0,14)) # day 0 is the start of the main draw
         
 		stores = ['S2', '22B', '11G', 'OCT']
 
@@ -1135,7 +1135,7 @@ if len(data_all) != 0:
 		with col6:
 			years_selected = st.multiselect("**Year:**", [2021, 2022, 2023, 2024], default=2024)
 		with col7:
-			days_selected = st.multiselect("**Date Index:**", range(0,13), default=range(0,13)) # day 0 is the start of the main draw
+			days_selected = st.multiselect("**Date Index:**", range(0,14), default=range(0,14)) # day 0 is the start of the main draw
 
 		try:
 			for store_code in stores:
